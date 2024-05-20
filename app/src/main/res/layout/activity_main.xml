@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/parking_garage_cleaning"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    tools:context=".MainActivity" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="40dp"
+        android:text="Welcome to Smart Parking "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/black"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnSign"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnUser"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/btnUser"
+        android:layout_marginBottom="116dp"
+        android:text="Sign Up"
+        android:textStyle="bold"
+        android:textColor="#f9f9f9" />
+
+    <Button
+        android:id="@+id/btnUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnSign"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:text="User Login"
+        android:textStyle="bold"
+        android:textColor="#f9f9f9" />
+
+</RelativeLayout>

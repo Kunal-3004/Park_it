@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Smart</string>
+    <string name="enable_location">Enable Location</string>
+    <string name="find_the_nearest_parking_lot">Find the nearest Parking lot</string>
+    <string name="avoid_getting_late_by_finding_a_parking_spot_near_you">Avoid getting late by finding a parking spot near you</string>
+    <string name="we_need_to_know_where_you_are_to_give_you_the_best_parking_experience">We need to know where you are to give you the best parking experience</string>
+    <string name="search_discover_amp_park"><![CDATA[Search, Discover & Park]]></string>
+    <string name="not_now">Not Now</string>
+
+</resources>
