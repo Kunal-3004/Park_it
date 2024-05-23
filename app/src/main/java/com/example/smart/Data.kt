@@ -18,7 +18,9 @@ class Data : AppCompatActivity() {
         setContentView(binding.root)
 
         val email = intent.getStringExtra("email")
+        val pwd=intent.getStringExtra("pwd")
         binding.tvEm.text = email
+        binding.tvPw.text=pwd
 
         database = FirebaseDatabase.getInstance().reference.child("users")
 
@@ -28,11 +30,11 @@ class Data : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val user = snapshot.getValue(User::class.java)
                     user?.let {
-                        binding.tvName.text = user.fname
+                        binding.tvNm.text = user.fname
                         binding.tvEm.text = user.email
-                        binding.tvCno.text = user.cno
-                        binding.tvNo.text = user.vno
-                        binding.tvPwd.text = user.pwd
+                        binding.tvCn.text = user.cno
+                        binding.tvN.text = user.vno
+                        binding.tvPw.text = user.pwd
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {

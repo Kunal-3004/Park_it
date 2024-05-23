@@ -125,6 +125,17 @@
         app:layout_constraintTop_toBottomOf="@id/passwordEditText" />
 
     <TextView
+        android:id="@+id/Register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Does not have an account? Register"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#938E8E"
+        android:textSize="16sp"/>
+
+    <TextView
         android:id="@+id/forgotPass"
         android:layout_width="100dp"
         android:layout_height="wrap_content"

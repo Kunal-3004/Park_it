@@ -58,6 +58,11 @@ class LoginActivity : Activity() {
             startActivity(intent)
             finish()
         }
+        binding.Register.setOnClickListener{
+            val intent=Intent(this,Registration::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
     private fun checkAllField(): Boolean{
         val email=binding.editTextEmail.text.toString()

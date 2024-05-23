@@ -7,25 +7,22 @@ import android.os.Bundle
 import android.widget.Button
 import com.example.smart.Authentication.LoginActivity
 import com.example.smart.Authentication.Registration
+import com.example.smart.databinding.ActivityMainBinding
 
 class MainActivity : Activity() {
-
-    private lateinit var btnUserSys: Button
-    private lateinit var btnSignup: Button
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding=ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        btnSignup = findViewById(R.id.btnSign)
-        btnUserSys = findViewById(R.id.btnUser)
-
-        btnSignup.setOnClickListener {
+        binding.btnSign.setOnClickListener {
             val intent = Intent(this@MainActivity, Registration::class.java)
             startActivity(intent)
         }
 
-        btnUserSys.setOnClickListener {
+        binding.btnUser.setOnClickListener {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
         }

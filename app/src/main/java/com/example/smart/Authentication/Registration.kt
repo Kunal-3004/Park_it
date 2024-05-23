@@ -64,7 +64,7 @@ class Registration : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid ?: return@addOnCompleteListener
-                    val user = User(fname, email, cno, vno)
+                    val user = User(fname, email, cno, vno,pwd)
                     database.reference.child("users").child(userId).setValue(user)
                         .addOnCompleteListener { task2 ->
                             if (task2.isSuccessful) {

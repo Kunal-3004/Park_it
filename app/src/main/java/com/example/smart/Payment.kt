@@ -1,159 +1,111 @@
 package com.example.smart
 
-
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import View
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.smart.databinding.ActivityPaymentBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.BufferedInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.Calendar
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 
-class Payment : Activity() {
-
+class Payment : AppCompatActivity() {
     private lateinit var binding: ActivityPaymentBinding
-
-    private lateinit var locationName: String
-    private lateinit var slotNo: String
-    private lateinit var locationId: String
-    private lateinit var price: String
-    private lateinit var uid: String
-    private lateinit var arrDate: String
-    private lateinit var arrTime: String
-    private lateinit var tid: String
-    private var randomAttack: Int = 0
-    private var mYear: Int = 0
-    private var mMonth: Int = 0
-    private var mDay: Int = 0
-
-    companion object {
-        const val DATE_DIALOG_ID = 0
-    }
+    private lateinit var qrCodeImage: ImageView
+    private lateinit var database: DatabaseReference
+    private lateinit var parkingId: String
+    private var emptySlots: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding=ActivityPaymentBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_payment)
+        binding = ActivityPaymentBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val c = Calendar.getInstance()
-        mYear = c.get(Calendar.YEAR)
-        mMonth = c.get(Calendar.MONTH)
-        mDay = c.get(Calendar.DAY_OF_MONTH)
+        qrCodeImage = findViewById(R.id.imageView1)
 
+        parkingId = intent.getStringExtra("parkingId") ?: ""
+        val location = intent.getStringExtra("location")
+        val price = intent.getDoubleExtra("price", 0.0)
+        emptySlots = intent.getIntExtra("emptySlots", 0)
 
-        val intent = intent
-        locationName = intent.extras?.getString("locationname") ?: ""
-        price = intent.extras?.getString("price") ?: ""
-        slotNo = intent.extras?.getString("slotno") ?: ""
-        locationId = intent.extras?.getString("locationid") ?: ""
-        uid = intent.extras?.getString("uid") ?: ""
+        binding.txt3.text = "User Id: " + intent.getStringExtra("uid")
+        binding.txt1.text = "Location: $location"
+        binding.txtpr.text = "Price: $price"
 
-        binding.txtpr.text = "Price:$price"
-        binding.txt1.text = locationName
-        binding.txt3.text = "User ID:$uid"
+        val upiString = generateUPIString("recipient-upi-id@bank", "Recipient Name", price, "Parking Payment")
+        generateQRCode(upiString)
 
-        for (j in 1..1) {
-            randomAttack = (Math.random() * 20).toInt()
-        }
-        binding.edtid.setText(randomAttack.toString())
-
-        binding.edtarr.setOnClickListener {
-            val today = System.currentTimeMillis() - 1000
-            val c = Calendar.getInstance()
-            val mYear = c.get(Calendar.YEAR)
-            val mMonth = c.get(Calendar.MONTH)
-            val mDay = c.get(Calendar.DAY_OF_MONTH)
-
-            val dpd = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                if (c.timeInMillis < today) {
-                    Toast.makeText(this@Payment, "Invalid date, please try again", Toast.LENGTH_LONG).show()
-                } else {
-                    val s = monthOfYear + 1
-                    val a = "$dayOfMonth/$s/$year"
-                    binding.edtarr.setText(a)
-                }
-            }
-
-            val d = DatePickerDialog(this@Payment, dpd, mYear, mMonth, mDay)
-            d.show()
-        }
-
-        binding.edtarr1.setOnClickListener {
-            val mCurrentTime = Calendar.getInstance()
-            val hour = mCurrentTime.get(Calendar.HOUR_OF_DAY)
-            val minute = mCurrentTime.get(Calendar.MINUTE)
-            val mTimePicker = TimePickerDialog(this@Payment, { _, selectedHour, selectedMinute ->
-                binding.edtarr1.setText("$selectedHour:$selectedMinute")
-            }, hour, minute, true)
-            mTimePicker.setTitle("Select Time")
-            mTimePicker.show()
-        }
+        database = FirebaseDatabase.getInstance().reference.child("parking_locations").child(parkingId)
 
         binding.btnpro.setOnClickListener {
-            if (binding.edtid.text.isNotEmpty()) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    pay()
+            val transactionId = binding.edtid.text.toString().trim()
+            if (transactionId.isNotEmpty()) {
+                if (emptySlots > 0) {
+                    val bookingRef = database.child("bookings").push()
+                    bookingRef.setValue(
+                        Booking(
+                            uid = intent.getStringExtra("uid") ?: "",
+                            location = location ?: "",
+                            price = price,
+                            arrivalDate = binding.edtarr.text.toString(),
+                            arrivalTime = binding.edtarr1.text.toString(),
+                            transactionId = transactionId
+                        )
+                    ).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            database.child("empty_slots").setValue(emptySlots - 1).addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(this, "Slot booked successfully", Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(this, View::class.java)
+                                    intent.putExtra("uid", intent.getStringExtra("uid"))
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    Toast.makeText(this, "Failed to update slot availability", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        } else {
+                            Toast.makeText(this, "Failed to book slot", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "No empty slots available", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                Toast.makeText(this, "Please enter transaction ID", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.btncan.setOnClickListener {
-            val intent = Intent(this@Payment, viewParking::class.java)
-            intent.putExtra("locationname", locationName)
-            intent.putExtra("locationid", locationId)
-            intent.putExtra("slotno", slotNo)
-            intent.putExtra("price", price)
-            startActivity(intent)
+            finish()
         }
     }
 
-    private suspend fun pay() {
-        withContext(Dispatchers.IO) {
-            var out = ""
-            arrDate = binding.edtarr.text.toString()
-            arrTime = binding.edtarr1.text.toString()
-            tid = binding.edtid.text.toString()
+    private fun generateUPIString(upiId: String, name: String, amount: Double, note: String): String {
+        return "upi://pay?pa=$upiId&pn=$name&am=$amount&cu=INR&tn=$note"
+    }
 
-            try {
-                val url = URL("http://192.168.43.249/pay.php?price=$price&arrdate=$arrDate&arrtime=$arrTime&Tid=$tid&locationid=$locationId&slotno=$slotNo&locationname=$locationName&uid=$uid")
-                val connection = url.openConnection() as HttpURLConnection
-                val inputStream: InputStream = BufferedInputStream(connection.inputStream)
-
-                var ch: Int
-                while (inputStream.read().also { ch = it } != -1) {
-                    if (ch == '\n'.toInt()) break
-                    out += ch.toChar()
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-            withContext(Dispatchers.Main) {
-                val alertDialog = AlertDialog.Builder(this@Payment).create()
-                alertDialog.setTitle("Success")
-                alertDialog.setMessage("Your request has been proceeded")
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "DONE") { dialog, _ ->
-                    val intent = Intent(this@Payment, MapActivity::class.java)
-                    startActivity(intent)
-                    dialog.dismiss()
-                }
-                alertDialog.show()
-                Toast.makeText(applicationContext, out, Toast.LENGTH_LONG).show()
-            }
+    private fun generateQRCode(text: String) {
+        try {
+            val barcodeEncoder = BarcodeEncoder()
+            val bitmap: Bitmap = barcodeEncoder.encodeBitmap(text, BarcodeFormat.QR_CODE, 400, 400)
+            qrCodeImage.setImageBitmap(bitmap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show()
         }
     }
+
+    data class Booking(
+        val uid: String,
+        val location: String,
+        val price: Double,
+        val arrivalDate: String,
+        val arrivalTime: String,
+        val transactionId: String
+    )
 }

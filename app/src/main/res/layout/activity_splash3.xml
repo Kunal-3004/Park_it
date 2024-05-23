@@ -8,6 +8,15 @@
     android:id="@+id/swipe2"
     tools:context=".Splash.Splash3">
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/sp3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="60dp"/>
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="253dp"
