@@ -1,8 +1,5 @@
 package com.example.smart
 
-import View
-import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
@@ -36,8 +33,7 @@ class Payment : AppCompatActivity() {
         binding.txt1.text = "Location: $location"
         binding.txtpr.text = "Price: $price"
 
-        val upiString = generateUPIString("recipient-upi-id@bank", "Recipient Name", price, "Parking Payment")
-        generateQRCode(upiString)
+        generateQRCode("payment_info:$parkingId:$price")
 
         database = FirebaseDatabase.getInstance().reference.child("parking_locations").child(parkingId)
 
@@ -60,9 +56,6 @@ class Payment : AppCompatActivity() {
                             database.child("empty_slots").setValue(emptySlots - 1).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     Toast.makeText(this, "Slot booked successfully", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this, View::class.java)
-                                    intent.putExtra("uid", intent.getStringExtra("uid"))
-                                    startActivity(intent)
                                     finish()
                                 } else {
                                     Toast.makeText(this, "Failed to update slot availability", Toast.LENGTH_SHORT).show()
@@ -85,14 +78,10 @@ class Payment : AppCompatActivity() {
         }
     }
 
-    private fun generateUPIString(upiId: String, name: String, amount: Double, note: String): String {
-        return "upi://pay?pa=$upiId&pn=$name&am=$amount&cu=INR&tn=$note"
-    }
-
     private fun generateQRCode(text: String) {
         try {
             val barcodeEncoder = BarcodeEncoder()
-            val bitmap: Bitmap = barcodeEncoder.encodeBitmap(text, BarcodeFormat.QR_CODE, 400, 400)
+            val bitmap = barcodeEncoder.encodeBitmap(text, BarcodeFormat.QR_CODE, 400, 400)
             qrCodeImage.setImageBitmap(bitmap)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -101,11 +90,13 @@ class Payment : AppCompatActivity() {
     }
 
     data class Booking(
-        val uid: String,
-        val location: String,
-        val price: Double,
-        val arrivalDate: String,
-        val arrivalTime: String,
-        val transactionId: String
-    )
+        val uid: String = "",
+        val location: String = "",
+        val price: Double = 0.0,
+        val arrivalDate: String = "",
+        val arrivalTime: String = "",
+        val transactionId: String = ""
+    ) {
+        constructor() : this("", "", 0.0, "", "", "")
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.smart
 
-import View
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
