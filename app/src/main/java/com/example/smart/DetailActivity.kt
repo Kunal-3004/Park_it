@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smart.databinding.ActivityDetailBinding
+import java.util.Calendar
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
@@ -16,6 +17,13 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding=ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val calendar=Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
 
 
         uid = intent.getStringExtra("uid") ?: ""
@@ -38,6 +46,11 @@ class DetailActivity : AppCompatActivity() {
                 intent.putExtra("location", location)
                 intent.putExtra("price", priceValue)
                 intent.putExtra("emptySlots", emptySlotsValue)
+                intent.putExtra("YEAR", year)
+                intent.putExtra("MONTH", month)
+                intent.putExtra("DAY", day)
+                intent.putExtra("HOUR", hour)
+                intent.putExtra("MINUTE", minute)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "No empty slots available", Toast.LENGTH_SHORT).show()

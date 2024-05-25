@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    kotlin("kapt")
 }
 
 android {
@@ -60,6 +61,8 @@ dependencies {
     implementation ("com.google.zxing:core:3.4.1")
 
     implementation ("androidx.work:work-runtime-ktx:2.9.0")
+
+    implementation ("com.android.volley:volley:1.2.1")
 
 
 

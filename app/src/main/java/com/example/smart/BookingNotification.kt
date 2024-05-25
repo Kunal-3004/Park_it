@@ -1,11 +1,15 @@
-package com.example.smart
-
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.example.smart.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class BookingNotification(ctx:Context,params:WorkerParameters):Worker(ctx,params) {
     override fun doWork(): Result {
@@ -29,8 +33,24 @@ class BookingNotification(ctx:Context,params:WorkerParameters):Worker(ctx,params
             .build()
 
         notificationManager.notify(1, notification)
+        updateEmptySlots()
+
         return Result.success()
     }
 
+    private fun updateEmptySlots() {
+        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
 
+        database.child("parking_locations").child("your_parking_id").child("empty_slots")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val currentSlots = dataSnapshot.getValue(Int::class.java) ?: 0
+                    database.child("parking_locations").child("your_parking_id").child("empty_slots")
+                        .setValue(currentSlots + 1)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                }
+            })
+    }
 }
