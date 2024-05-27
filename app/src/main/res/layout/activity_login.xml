@@ -98,16 +98,16 @@
         android:layout_marginTop="18dp"
         android:layout_marginEnd="32dp"/>
 
-    <ImageView
+    <Button
         android:id="@+id/btnLogin"
         android:layout_width="350dp"
         android:layout_height="89dp"
         android:layout_marginTop="84dp"
+        android:backgroundTint="#121111"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordEditText"
-        app:srcCompat="@drawable/box" />
+        app:layout_constraintTop_toBottomOf="@id/passwordEditText" />
 
 
     <TextView
@@ -116,8 +116,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:text="Login"
-        android:textColor="@color/white"
-        android:textSize="28sp"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

@@ -27,12 +27,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/btnUser"
-        android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/btnUser"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="116dp"
+        android:backgroundTint="#201E1E"
         android:text="Sign Up"
-        android:textStyle="bold"
-        android:textColor="#f9f9f9" />
+        android:textColor="#f9f9f9"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btnUser"
@@ -41,8 +42,9 @@
         android:layout_above="@+id/btnSign"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="40dp"
+        android:backgroundTint="#1B1919"
         android:text="User Login"
-        android:textStyle="bold"
-        android:textColor="#f9f9f9" />
+        android:textColor="#f9f9f9"
+        android:textStyle="bold" />
 
 </RelativeLayout>

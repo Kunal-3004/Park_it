@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.smart.SwipeGesture
 import com.example.smart.Authentication.LoginActivity
+import com.example.smart.MainActivity
 import com.example.smart.databinding.ActivitySplash4Binding
 
 class Splash4 : AppCompatActivity(),SwipeGesture.SwipeListener {
@@ -27,7 +28,7 @@ class Splash4 : AppCompatActivity(),SwipeGesture.SwipeListener {
         swipeGestureDetector.setOnTouchListener(binding.swipe3)
 
         binding.NotNow.setOnClickListener{
-            val intent= Intent(this, LoginActivity::class.java)
+            val intent= Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }

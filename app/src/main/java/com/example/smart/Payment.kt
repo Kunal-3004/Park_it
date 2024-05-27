@@ -165,4 +165,7 @@ class Payment : AppCompatActivity() {
         val arrivalTime: String,
         val transactionId: String
     )
+    {
+        constructor() : this("", "", 0.0, "", "", "")
+    }
 }
