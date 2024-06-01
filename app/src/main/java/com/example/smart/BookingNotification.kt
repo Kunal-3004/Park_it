@@ -26,7 +26,7 @@ class BookingNotification(ctx:Context,params:WorkerParameters):Worker(ctx,params
             notificationManager.createNotificationChannel(channel)
         }
         val notification = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.drawable.logo)
+            .setSmallIcon(R.drawable.smart)
             .setContentTitle("Booking Alert")
             .setContentText("Your booking time has completed!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
