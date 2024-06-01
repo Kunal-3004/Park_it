@@ -46,6 +46,17 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:src="@drawable/location__ramnagar_slots__10_empty_slots__4_price_10hr"
+        app:layout_constraintTop_toBottomOf="@id/textView3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/circle3.1"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="80dp"/>
+
+    <ImageView
         android:id="@+id/circle3.1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
