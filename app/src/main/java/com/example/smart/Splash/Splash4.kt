@@ -3,40 +3,40 @@ package com.example.smart.Splash
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.smart.SwipeGesture
 import com.example.smart.Authentication.LoginActivity
 import com.example.smart.MainActivity
+import com.example.smart.SwipeGesture
 import com.example.smart.databinding.ActivitySplash4Binding
 
-class Splash4 : AppCompatActivity(),SwipeGesture.SwipeListener {
+class Splash4 : AppCompatActivity(), SwipeGesture.SwipeListener {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private lateinit var binding: ActivitySplash4Binding
     private lateinit var swipeGestureDetector: SwipeGesture.SwipeGestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding=ActivitySplash4Binding.inflate(layoutInflater)
+        binding = ActivitySplash4Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        swipeGestureDetector= SwipeGesture.SwipeGestureDetector(this, this)
+        swipeGestureDetector = SwipeGesture.SwipeGestureDetector(this, this)
         swipeGestureDetector.setOnTouchListener(binding.swipe3)
 
-        binding.NotNow.setOnClickListener{
-            val intent= Intent(this, MainActivity::class.java)
+        binding.NotNow.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
         binding.EnableLocation.setOnClickListener {
-            enableLocation(it)
+            checkLocationPermissionAndEnable()
         }
-
     }
+
     override fun onSwipeRight() {
         val intent = Intent(this, Splash3::class.java)
         startActivity(intent)
@@ -46,9 +46,11 @@ class Splash4 : AppCompatActivity(),SwipeGesture.SwipeListener {
     override fun onSwipeLeft() {
     }
 
-    private fun isLocationPermissionGranted():Boolean{
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION
-        )== PackageManager.PERMISSION_GRANTED
+    private fun isLocationPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestLocationPermission() {
@@ -60,34 +62,39 @@ class Splash4 : AppCompatActivity(),SwipeGesture.SwipeListener {
     }
 
     private fun isLocationEnabled(): Boolean {
-        val locationMode: Int = try {
-            Settings.Secure.getInt(
-                applicationContext.contentResolver,
+        return try {
+            val locationMode = Settings.Secure.getInt(
+                contentResolver,
                 Settings.Secure.LOCATION_MODE
             )
+            locationMode != Settings.Secure.LOCATION_MODE_OFF
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
-            return false
+            false
         }
-        return locationMode != Settings.Secure.LOCATION_MODE_OFF
     }
 
-    fun enableLocation(view: android.view.View) {
-        if (!isLocationEnabled()) {
-            val locationSettingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivity(locationSettingsIntent)
-        } else {
-            startNextActivity()
-        }
-    }
-    private fun startNextActivity() {
+    private fun checkLocationPermissionAndEnable() {
         if (isLocationPermissionGranted()) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
+            enableLocation()
         } else {
             requestLocationPermission()
         }
+    }
+
+    private fun enableLocation() {
+        if (isLocationEnabled()) {
+            startNextActivity()
+        } else {
+            val locationSettingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(locationSettingsIntent)
+        }
+    }
+
+    private fun startNextActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     override fun onRequestPermissionsResult(
@@ -99,6 +106,7 @@ class Splash4 : AppCompatActivity(),SwipeGesture.SwipeListener {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show()
+                enableLocation() // Now that permission is granted, check if location services are enabled
             } else {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
             }
