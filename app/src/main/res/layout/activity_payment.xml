@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             >
 
@@ -22,7 +22,7 @@
                 android:id="@+id/txt3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User Id"
+                android:text="@string/user_id"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -30,7 +30,7 @@
                 android:id="@+id/txt1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Location Name"
+                android:text="@string/location_name"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -38,7 +38,7 @@
                 android:id="@+id/txtpr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Price"
+                android:text="@string/price"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -46,7 +46,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Arrival Date"
+                android:text="@string/arrival_date"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -54,9 +54,10 @@
                 android:id="@+id/edtarr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select Arrival Date"
+                android:hint="@string/arrival_date1"
                 android:layout_marginStart="5dp"
-                android:ems="10" >
+                android:ems="10"
+                android:autofillHints="">
 
                 <requestFocus />
             </EditText>
@@ -65,7 +66,7 @@
                 android:id="@+id/textView1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Arrival Time"
+                android:text="@string/arrival_time"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -73,16 +74,17 @@
                 android:id="@+id/edtarr1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select Arrival time"
+                android:hint="@string/arrival_time1"
                 android:layout_marginStart="5dp"
-                android:ems="10" />
+                android:ems="10"
+                android:autofillHints="" />
 
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Payment"
+                android:text="@string/payment"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -90,14 +92,13 @@
                 android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="300dp"
-
                 android:src="@drawable/qr" />
 
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Transaction id"
+                android:text="@string/transaction_id"
                 android:layout_marginStart="5dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -109,22 +110,24 @@
                 android:padding="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:hint="Id"
+                android:hint="@string/id"
                 android:ems="10" />
+
+
 
             <Button
                 android:id="@+id/btnpro"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Proceed" />
+                android:text="@string/proceed" />
 
             <Button
                 android:id="@+id/btncan"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cancel" />
+                android:text="@string/cancel" />
 
         </LinearLayout>
     </ScrollView>

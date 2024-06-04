@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.smart.DataClass.Booking
 import com.example.smart.databinding.ActivityViewBinding
 import com.google.firebase.database.*
 
@@ -17,7 +18,7 @@ class View : AppCompatActivity(), SwipeGesture.SwipeListener {
     private lateinit var database: DatabaseReference
     private lateinit var bookingAdapter: BookingAdapter
     private lateinit var uid: String
-    private val bookings = mutableListOf<Payment.Booking>()
+    private val bookings = mutableListOf<Booking>()
     private var databaseListener: ValueEventListener? = null
 
     private lateinit var swipeGestureDetector: SwipeGesture.SwipeGestureDetector
@@ -65,7 +66,7 @@ class View : AppCompatActivity(), SwipeGesture.SwipeListener {
                 for (parkingSnapshot in snapshot.children) {
                     val bookingsSnapshot = parkingSnapshot.child("bookings")
                     for (bookingSnapshot in bookingsSnapshot.children) {
-                        val booking = bookingSnapshot.getValue(Payment.Booking::class.java)
+                        val booking = bookingSnapshot.getValue(Booking::class.java)
                         if (booking != null && booking.uid == uid) {
                             bookings.add(booking)
                         } else {

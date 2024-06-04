@@ -15,5 +15,17 @@
     <string name="email">Email</string>
     <string name="email1">EMAIL</string>
     <string name="hi_nplease_login">Hi,\nPlease Login</string>
+    <string name="arrival_time">Arrival Time</string>
+    <string name="arrival_time1">Arrival time</string>
+    <string name="payment">Payment</string>
+    <string name="transaction_id">Transaction id</string>
+    <string name="id">Id</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel">Cancel</string>
+    <string name="user_id">User Id</string>
+    <string name="location_name">Location Name</string>
+    <string name="price">Price</string>
+    <string name="arrival_date">Arrival Date</string>
+    <string name="arrival_date1">Arrival Date</string>
 
 </resources>

@@ -1,34 +1,36 @@
 package com.example.smart
 
 import BookingNotification
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.example.smart.DataClass.Booking
 import com.example.smart.databinding.ActivityPaymentBinding
 import com.google.firebase.database.*
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
 import java.util.*
 
 class Payment : AppCompatActivity() {
     private lateinit var binding: ActivityPaymentBinding
-    private lateinit var qrCodeImage: ImageView
     private lateinit var database: DatabaseReference
     private lateinit var parkingId: String
     private var price: Double = 0.0
+    private lateinit var upiId: String
+
+    companion object {
+        private const val UPI_PAYMENT_REQUEST_CODE = 1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        qrCodeImage = binding.imageView1
 
         val dateAndTime = getDateAndTimeFromIntent()
 
@@ -36,64 +38,97 @@ class Payment : AppCompatActivity() {
         val location = intent.getStringExtra("location")
         price = intent.getDoubleExtra("price", 0.0)
 
+        binding.txt3.text = "User ID: $parkingId"
         binding.txt1.text = "Location: $location"
         binding.txtpr.text = "Price: $price"
         binding.edtarr.setText("${dateAndTime.day}/${dateAndTime.month + 1}/${dateAndTime.year}")
         binding.edtarr1.setText("${dateAndTime.hour}:${dateAndTime.minute}")
 
-        val upiId = "bshsjggjfdhjijshgdhdudj@oksbi"
-        val userName = "Parking Service"
-        generateQRCode("upi://pay?pa=$upiId&pn=$userName&am=$price&cu=INR&tn=Parking%20Payment")
-
         database = FirebaseDatabase.getInstance().reference.child("parking_locations").child(parkingId)
+
+        fetchUPIId()
 
         binding.btnpro.setOnClickListener {
             openPaymentApp()
-            val transactionId = binding.edtid.text.toString().trim()
-            if (transactionId.isNotEmpty()) {
-                confirmBooking(transactionId)
-            } else {
-                Toast.makeText(this, "Please enter transaction ID", Toast.LENGTH_SHORT).show()
-            }
         }
-
         binding.btncan.setOnClickListener {
             finish()
         }
     }
 
-    private fun generateQRCode(text: String) {
-        try {
-            val barcodeEncoder = BarcodeEncoder()
-            val bitmap = barcodeEncoder.encodeBitmap(text, BarcodeFormat.QR_CODE, 400, 400)
-            qrCodeImage.setImageBitmap(bitmap)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show()
-        }
+    private fun fetchUPIId() {
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                upiId = snapshot.child("upiId").getValue(String::class.java) ?: ""
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@Payment, "Failed to fetch UPI ID", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun openPaymentApp() {
-        val upiId = "bshsjggjfdhjijshgdhdudj@oksbi"
+        fetchUPIId()
+
+        if (upiId.isEmpty()) {
+            Toast.makeText(this, "UPI ID not found, please update the parking location details", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val amount = price.toString()
         val name = "Parking Service"
         val payeeUri = Uri.parse("upi://pay?pa=$upiId&pn=$name&am=$amount&cu=INR&tn=Parking%20Payment")
         Log.d("Payment", "UPI URI: $payeeUri")
 
-        val paymentIntent = Intent(Intent.ACTION_VIEW).apply {
-            data = payeeUri
+        val paymentIntent = Intent(Intent.ACTION_VIEW, payeeUri)
+
+        if (paymentIntent.resolveActivity(packageManager) != null) {
+            try {
+                startActivityForResult(paymentIntent, UPI_PAYMENT_REQUEST_CODE)
+            } catch (e: ActivityNotFoundException) {
+                Log.e("Payment", "No UPI app found", e)
+                Toast.makeText(this, "No UPI app found, please install one to proceed", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Log.e("Payment", "No UPI app available")
+            Toast.makeText(this, "No UPI app available, please install one to proceed", Toast.LENGTH_SHORT).show()
         }
-        val chooser = Intent.createChooser(paymentIntent, "Pay with")
+    }
+      /*  val chooser = Intent.createChooser(paymentIntent, "Pay with")
 
         if (paymentIntent.resolveActivity(packageManager) != null) {
             startActivity(chooser)
         } else {
             Log.e("Payment", "No UPI app found")
             Toast.makeText(this, "No UPI app found, please install one to proceed", Toast.LENGTH_SHORT).show()
+        }*/
+
+
+    private fun generateTransactionId(): String {
+        return UUID.randomUUID().toString()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == UPI_PAYMENT_REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    confirmBooking()
+                }
+                Activity.RESULT_CANCELED -> {
+                    Toast.makeText(this, "Payment canceled", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(this, "Payment failed", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
-    private fun confirmBooking(transactionId: String) {
+    private fun confirmBooking() {
+        val transactionId = generateTransactionId()
         val dateAndTime = getDateAndTimeFromIntent()
         val bookingRef = database.child("bookings").push()
         bookingRef.setValue(
@@ -107,29 +142,34 @@ class Payment : AppCompatActivity() {
             )
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                database.child("empty_slots").addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val currentSlots = snapshot.getValue(Int::class.java) ?: 0
-                        database.child("empty_slots").setValue(currentSlots - 1)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(this@Payment, "Slot booked successfully", Toast.LENGTH_SHORT).show()
-                                    scheduleBookingEndNotification()
-                                    finish()
-                                } else {
-                                    Toast.makeText(this@Payment, "Failed to update slot availability", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@Payment, "Failed to retrieve empty slots", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            } else {
-                Toast.makeText(this@Payment, "Failed to book slot", Toast.LENGTH_SHORT).show()
+                updateSlotAvailability()
+            }
+            else {
+                Toast.makeText(this, "Failed to book slot", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updateSlotAvailability() {
+        database.child("empty_slots").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val currentSlots = snapshot.getValue(Int::class.java) ?: 0
+                database.child("empty_slots").setValue(currentSlots - 1)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(this@Payment, "Slot booked successfully", Toast.LENGTH_SHORT).show()
+                            scheduleBookingEndNotification()
+                            finish()
+                        } else {
+                            Toast.makeText(this@Payment, "Failed to update slot availability", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@Payment, "Failed to retrieve empty slots", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun scheduleBookingEndNotification() {
@@ -148,7 +188,6 @@ class Payment : AppCompatActivity() {
             minute = intent.getIntExtra("MINUTE", 0)
         )
     }
-
     data class DateAndTime(
         val year: Int,
         val month: Int,
@@ -156,16 +195,4 @@ class Payment : AppCompatActivity() {
         val hour: Int,
         val minute: Int
     )
-
-    data class Booking(
-        val uid: String,
-        val location: String,
-        val price: Double,
-        val arrivalDate: String,
-        val arrivalTime: String,
-        val transactionId: String
-    )
-    {
-        constructor() : this("", "", 0.0, "", "", "")
-    }
 }

@@ -5,8 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.smart.DataClass.Booking
 
-class BookingAdapter(private val bookings: List<Payment.Booking>) :
+class BookingAdapter(private val bookings: List<Booking>) :
     RecyclerView.Adapter<BookingAdapter.BookingViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookingViewHolder {
@@ -29,7 +30,7 @@ class BookingAdapter(private val bookings: List<Payment.Booking>) :
         private val txtArrivalTime: TextView = itemView.findViewById(R.id.txtArrivalTime)
         private val txtTransactionId: TextView = itemView.findViewById(R.id.txtTransactionId)
 
-        fun bind(booking: Payment.Booking) {
+        fun bind(booking: Booking) {
             txtLocation.text = "Location: ${booking.location}"
             txtPrice.text = "Price: ${booking.price}"
             txtArrivalDate.text = "Arrival Date: ${booking.arrivalDate}"

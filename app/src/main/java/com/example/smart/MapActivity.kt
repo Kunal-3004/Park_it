@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.example.smart.DataClass.ParkingLocation
 import com.example.smart.databinding.ActivityMapBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -101,7 +102,7 @@ class MapActivity : FragmentActivity(), LocationListener, OnMapReadyCallback {
             addMarkerAndShowDialog(latLng)
         }
 
-        mGoogleMap.setOnInfoWindowClickListener { marker ->
+       mGoogleMap.setOnInfoWindowClickListener { marker ->
             val parkingId = marker.tag as? String ?: return@setOnInfoWindowClickListener
             val snippetParts = marker.snippet?.split(", ") ?: listOf("", "", "")
             val totalSlots = snippetParts.getOrNull(0)?.split(":")?.get(1)?.trim()?.toInt() ?: 0
@@ -218,17 +219,4 @@ class MapActivity : FragmentActivity(), LocationListener, OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
     }
-}
-
-data class ParkingLocation(
-    val uid: String,
-    val location: String = "",
-    val total_slots: Int = 0,
-    val empty_slots: Int = 0,
-    val longitude: Double = 0.0,
-    val latitude: Double = 0.0,
-    val price: Double = 0.0
-)
-{
-    constructor() : this("", "", 0, 0, 0.0, 0.0, 0.0)
 }
