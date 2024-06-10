@@ -29,7 +29,6 @@ class View : AppCompatActivity(), SwipeGesture.SwipeListener {
         setContentView(binding.root)
 
         uid = intent.getStringExtra("uid") ?: ""
-        Log.d("ViewActivity", "UID received from Intent: $uid")
         if (uid.isEmpty()) {
             Log.e("ViewActivity", "UID is null or empty")
             Toast.makeText(this, "Error: UID is not provided", Toast.LENGTH_SHORT).show()
@@ -56,7 +55,6 @@ class View : AppCompatActivity(), SwipeGesture.SwipeListener {
     }
 
     override fun onSwipeLeft() {
-        // No action on swipe left
     }
 
     private fun loadBookings() {
@@ -88,7 +86,6 @@ class View : AppCompatActivity(), SwipeGesture.SwipeListener {
 
     override fun onPause() {
         super.onPause()
-        // Remove Firebase database listener to prevent DeadObjectException
         databaseListener?.let {
             database.removeEventListener(it)
         }
@@ -96,7 +93,6 @@ class View : AppCompatActivity(), SwipeGesture.SwipeListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Ensure listener is removed to avoid memory leaks
         databaseListener?.let {
             database.removeEventListener(it)
         }

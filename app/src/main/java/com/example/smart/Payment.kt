@@ -34,6 +34,8 @@ class Payment : AppCompatActivity() {
 
         val dateAndTime = getDateAndTimeFromIntent()
 
+        parkingId=generateParkingId()
+
         parkingId = intent.getStringExtra("parkingId") ?: ""
         val location = intent.getStringExtra("location")
         price = intent.getDoubleExtra("price", 0.0)
@@ -43,23 +45,28 @@ class Payment : AppCompatActivity() {
         binding.txtpr.text = "Price: $price"
         binding.edtarr.setText("${dateAndTime.day}/${dateAndTime.month + 1}/${dateAndTime.year}")
         binding.edtarr1.setText("${dateAndTime.hour}:${dateAndTime.minute}")
+        binding.edtid.setText(generateTransactionId())
 
         database = FirebaseDatabase.getInstance().reference.child("parking_locations").child(parkingId)
 
-        fetchUPIId()
+        fetchUPIId {}
+
 
         binding.btnpro.setOnClickListener {
-            openPaymentApp()
+            fetchUPIId {
+                openPaymentApp()
+            }
         }
         binding.btncan.setOnClickListener {
             finish()
         }
     }
 
-    private fun fetchUPIId() {
+    private fun fetchUPIId(onFetched: () -> Unit) {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 upiId = snapshot.child("upiId").getValue(String::class.java) ?: ""
+                onFetched()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -69,8 +76,6 @@ class Payment : AppCompatActivity() {
     }
 
     private fun openPaymentApp() {
-        fetchUPIId()
-
         if (upiId.isEmpty()) {
             Toast.makeText(this, "UPI ID not found, please update the parking location details", Toast.LENGTH_SHORT).show()
             return
@@ -83,29 +88,27 @@ class Payment : AppCompatActivity() {
 
         val paymentIntent = Intent(Intent.ACTION_VIEW, payeeUri)
 
+        // Use Intent Chooser
+        val chooser = Intent.createChooser(paymentIntent, "Pay with")
+
+        // Check if there is an app that can handle the intent
         if (paymentIntent.resolveActivity(packageManager) != null) {
             try {
-                startActivityForResult(paymentIntent, UPI_PAYMENT_REQUEST_CODE)
+                startActivityForResult(chooser, UPI_PAYMENT_REQUEST_CODE)
             } catch (e: ActivityNotFoundException) {
                 Log.e("Payment", "No UPI app found", e)
                 Toast.makeText(this, "No UPI app found, please install one to proceed", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Log.e("Payment", "No UPI app available")
-            Toast.makeText(this, "No UPI app available, please install one to proceed", Toast.LENGTH_SHORT).show()
-        }
-    }
-      /*  val chooser = Intent.createChooser(paymentIntent, "Pay with")
-
-        if (paymentIntent.resolveActivity(packageManager) != null) {
-            startActivity(chooser)
-        } else {
             Log.e("Payment", "No UPI app found")
             Toast.makeText(this, "No UPI app found, please install one to proceed", Toast.LENGTH_SHORT).show()
-        }*/
-
+        }
+    }
 
     private fun generateTransactionId(): String {
+        return UUID.randomUUID().toString()
+    }
+    private fun generateParkingId(): String {
         return UUID.randomUUID().toString()
     }
 
@@ -143,8 +146,7 @@ class Payment : AppCompatActivity() {
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 updateSlotAvailability()
-            }
-            else {
+            } else {
                 Toast.makeText(this, "Failed to book slot", Toast.LENGTH_SHORT).show()
             }
         }
@@ -188,6 +190,7 @@ class Payment : AppCompatActivity() {
             minute = intent.getIntExtra("MINUTE", 0)
         )
     }
+
     data class DateAndTime(
         val year: Int,
         val month: Int,
