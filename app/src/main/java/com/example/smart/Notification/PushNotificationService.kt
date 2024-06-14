@@ -62,8 +62,5 @@ class PushNotificationService: FirebaseMessagingService() {
             WorkManager.getInstance(applicationContext)
                 .enqueue(notificationRequest)
         }
-
-        // Respond to received messages
-        // You can specify here what to do when the received notification is clicked
     }
 }

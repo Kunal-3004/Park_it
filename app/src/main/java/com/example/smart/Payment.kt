@@ -192,7 +192,6 @@ class Payment : AppCompatActivity() {
     private fun scheduleBookingEndNotification() {
         val workManager = WorkManager.getInstance(applicationContext)
         val bookingNotificationRequest = OneTimeWorkRequest.Builder(PushNotificationWorker::class.java)
-            .setInitialDelay(3600000, TimeUnit.MILLISECONDS)
             .build()
         workManager.enqueue(bookingNotificationRequest)
     }
