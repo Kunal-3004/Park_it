@@ -24,11 +24,11 @@ class PushNotificationWorker(context:Context,parameters:WorkerParameters):Corout
             val deepLink = inputData.getString("deepLink")
 
             val uid = inputData.getString("uid") ?: return@withContext Result.failure()
-            val transcationId = inputData.getString("transcationId") ?: return@withContext Result.failure()
+            val transactionId = inputData.getString("transactionId") ?: return@withContext Result.failure()
             val bookingRef = FirebaseDatabase.getInstance().reference
                 .child("bookings")
                 .child(uid)
-                .child(transcationId)
+                .child(transactionId)
 
             bookingRef.child("endTime").addListenerForSingleValueEvent(object:ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
