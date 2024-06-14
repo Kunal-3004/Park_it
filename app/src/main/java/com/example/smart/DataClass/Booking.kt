@@ -7,5 +7,6 @@ data class Booking(
     val price: Double = 0.0,
     val arrivalDate: String = "",
     val arrivalTime: String = "",
+    val endTime:String="",
     val transactionId: String = ""
 )

@@ -1,6 +1,7 @@
 package com.example.smart
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smart.databinding.ActivityUser1Binding
@@ -17,6 +18,8 @@ class User1: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding=ActivityUser1Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        handleIntent(intent)
 
 
         email = intent.getStringExtra("email")
@@ -46,5 +49,21 @@ class User1: AppCompatActivity() {
             intent.putExtra("email", email)
             startActivity(intent)
         }
+
     }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+    private fun handleIntent(intent: Intent) {
+        val data: Uri? = intent.data
+        if (data != null) {
+            email = data.getQueryParameter("email")
+            uid = data.getQueryParameter("uid")
+        } else {
+            email = intent.getStringExtra("email")
+            uid = intent.getStringExtra("uid")
+        }
+    }
+
 }

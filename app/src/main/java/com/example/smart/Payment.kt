@@ -1,10 +1,13 @@
 package com.example.smart
 
-import BookingNotification
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,9 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.smart.DataClass.Booking
+import com.example.smart.Notification.Constants
+import com.example.smart.Notification.PushNotificationWorker
 import com.example.smart.databinding.ActivityPaymentBinding
 import com.google.firebase.database.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class Payment : AppCompatActivity() {
     private lateinit var binding: ActivityPaymentBinding
@@ -33,6 +39,8 @@ class Payment : AppCompatActivity() {
         setContentView(binding.root)
 
         val dateAndTime = getDateAndTimeFromIntent()
+        val notificationManager=applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        createNotificationChannel(notificationManager)
 
         parkingId=generateParkingId()
 
@@ -87,11 +95,8 @@ class Payment : AppCompatActivity() {
         Log.d("Payment", "UPI URI: $payeeUri")
 
         val paymentIntent = Intent(Intent.ACTION_VIEW, payeeUri)
-
-        // Use Intent Chooser
         val chooser = Intent.createChooser(paymentIntent, "Pay with")
 
-        // Check if there is an app that can handle the intent
         if (paymentIntent.resolveActivity(packageManager) != null) {
             try {
                 startActivityForResult(chooser, UPI_PAYMENT_REQUEST_CODE)
@@ -133,6 +138,14 @@ class Payment : AppCompatActivity() {
     private fun confirmBooking() {
         val transactionId = generateTransactionId()
         val dateAndTime = getDateAndTimeFromIntent()
+
+        val arrivalCalendar = Calendar.getInstance().apply {
+            set(dateAndTime.year, dateAndTime.month, dateAndTime.day, dateAndTime.hour, dateAndTime.minute)
+        }
+        arrivalCalendar.add(Calendar.HOUR_OF_DAY, 1)
+
+        val endTime = "${arrivalCalendar.get(Calendar.HOUR_OF_DAY)}:${arrivalCalendar.get(Calendar.MINUTE)}"
+
         val bookingRef = database.child("bookings").push()
         bookingRef.setValue(
             Booking(
@@ -141,11 +154,13 @@ class Payment : AppCompatActivity() {
                 price = price,
                 arrivalDate = "${dateAndTime.day}/${dateAndTime.month + 1}/${dateAndTime.year}",
                 arrivalTime = "${dateAndTime.hour}:${dateAndTime.minute}",
+                endTime=endTime,
                 transactionId = transactionId
             )
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 updateSlotAvailability()
+                scheduleBookingEndNotification()
             } else {
                 Toast.makeText(this, "Failed to book slot", Toast.LENGTH_SHORT).show()
             }
@@ -176,10 +191,27 @@ class Payment : AppCompatActivity() {
 
     private fun scheduleBookingEndNotification() {
         val workManager = WorkManager.getInstance(applicationContext)
-        val bookingNotificationRequest = OneTimeWorkRequest.Builder(BookingNotification::class.java)
+        val bookingNotificationRequest = OneTimeWorkRequest.Builder(PushNotificationWorker::class.java)
+            .setInitialDelay(3600000, TimeUnit.MILLISECONDS)
             .build()
         workManager.enqueue(bookingNotificationRequest)
     }
+    private fun createNotificationChannel(notificationManager: NotificationManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                Constants.PUSH_NOTIFICATION_CHANNEL_ID,
+                Constants.PUSH_NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                enableLights(true)
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+        else {
+            return
+        }
+    }
+
 
     private fun getDateAndTimeFromIntent(): DateAndTime {
         return DateAndTime(
