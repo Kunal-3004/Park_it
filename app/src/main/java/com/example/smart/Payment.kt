@@ -210,8 +210,6 @@ class Payment : AppCompatActivity() {
             return
         }
     }
-
-
     private fun getDateAndTimeFromIntent(): DateAndTime {
         return DateAndTime(
             year = intent.getIntExtra("YEAR", 0),

@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 class User1: AppCompatActivity() {
 
     private lateinit var binding: ActivityUser1Binding
+    private lateinit var auth: FirebaseAuth
 
     private var uid: String? = null
     private var email: String? = null
@@ -20,10 +21,13 @@ class User1: AppCompatActivity() {
         setContentView(binding.root)
 
         handleIntent(intent)
+        auth=FirebaseAuth.getInstance()
+        val user=auth.currentUser
+        uid=user?.uid
 
 
         email = intent.getStringExtra("email")
-        uid = intent.getStringExtra("uid")
+       // uid = intent.getStringExtra("uid")
 
         binding.btnbook.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
