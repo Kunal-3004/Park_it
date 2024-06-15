@@ -15,7 +15,6 @@ import com.example.smart.SwipeGesture
 import com.example.smart.databinding.ActivitySplash4Binding
 
 class Splash4 : AppCompatActivity(), SwipeGesture.SwipeListener {
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private lateinit var binding: ActivitySplash4Binding
     private lateinit var swipeGestureDetector: SwipeGesture.SwipeGestureDetector
 
@@ -27,13 +26,11 @@ class Splash4 : AppCompatActivity(), SwipeGesture.SwipeListener {
         swipeGestureDetector = SwipeGesture.SwipeGestureDetector(this, this)
         swipeGestureDetector.setOnTouchListener(binding.swipe3)
 
-        binding.NotNow.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
         binding.EnableLocation.setOnClickListener {
-            checkLocationPermissionAndEnable()
+            startNextActivity()
+        }
+        binding.Continue.setOnClickListener {
+            startNextActivity()
         }
     }
 
@@ -42,74 +39,11 @@ class Splash4 : AppCompatActivity(), SwipeGesture.SwipeListener {
         startActivity(intent)
         finish()
     }
-
     override fun onSwipeLeft() {
     }
-
-    private fun isLocationPermissionGranted(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
-    }
-
-    private fun isLocationEnabled(): Boolean {
-        return try {
-            val locationMode = Settings.Secure.getInt(
-                contentResolver,
-                Settings.Secure.LOCATION_MODE
-            )
-            locationMode != Settings.Secure.LOCATION_MODE_OFF
-        } catch (e: Settings.SettingNotFoundException) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    private fun checkLocationPermissionAndEnable() {
-        if (isLocationPermissionGranted()) {
-            enableLocation()
-        } else {
-            requestLocationPermission()
-        }
-    }
-
-    private fun enableLocation() {
-        if (isLocationEnabled()) {
-            startNextActivity()
-        } else {
-            val locationSettingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivity(locationSettingsIntent)
-        }
-    }
-
     private fun startNextActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show()
-                enableLocation() // Now that permission is granted, check if location services are enabled
-            } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }
