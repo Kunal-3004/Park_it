@@ -25,8 +25,10 @@ class PushNotificationWorker(context:Context,parameters:WorkerParameters):Corout
 
             val uid = inputData.getString("uid") ?: return@withContext Result.failure()
             val transactionId = inputData.getString("transactionId") ?: return@withContext Result.failure()
+            val parkingId = inputData.getString("parkingId") ?: return@withContext Result.failure()
             val bookingRef = FirebaseDatabase.getInstance().reference
                 .child("bookings")
+                .child(parkingId)
                 .child(uid)
                 .child(transactionId)
 
@@ -40,11 +42,11 @@ class PushNotificationWorker(context:Context,parameters:WorkerParameters):Corout
                         val currentTime = Calendar.getInstance().time
                         if (currentTime >= endTime) {
                             sendNotification(title!!, body!!, deepLink!!, applicationContext)
+                            updateSlotAvailability(parkingId)
                         }
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
-
                 }
             })
             Result.success()
@@ -52,4 +54,16 @@ class PushNotificationWorker(context:Context,parameters:WorkerParameters):Corout
             Result.failure()
         }
     }
+    private fun updateSlotAvailability(parkingId: String) {
+        val parkingRef = FirebaseDatabase.getInstance().reference.child("parking_locations").child(parkingId)
+        parkingRef.child("empty_slots").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val currentSlots = snapshot.getValue(Int::class.java) ?: 0
+                parkingRef.child("empty_slots").setValue(currentSlots + 1)
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
 }
