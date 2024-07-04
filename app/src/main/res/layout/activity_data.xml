@@ -15,18 +15,24 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             >
-
             <TextView
                 android:id="@+id/textView1"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Details"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:textSize="26sp"
+                android:layout_marginTop="40dp"
+                android:layout_gravity="center"
+                android:textSize="28sp"
                 android:fontFamily="serif"
                 android:textColor="@color/black"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="380dp"
+                android:layout_marginTop="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
 
             <TextView
                 android:id="@+id/tvName"
@@ -37,23 +43,23 @@
                 android:layout_marginStart="10dp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <TextView
-                android:id="@+id/tvNm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/custombox"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:padding="8dp"
-                android:hint="Name"
-                android:layout_marginTop="2dp"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TextView
+                    android:id="@+id/tvNm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="42dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/custombox"
+                    android:hint="Name"
+                    android:padding="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
+                <TextView
                 android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="82dp"
                 android:layout_marginStart="10dp"
                 android:text="Email"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -67,7 +73,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:hint="Email"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="112dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -75,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Contact No."
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="152dp"
                 android:layout_marginStart="10dp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -87,7 +93,7 @@
                 android:padding="8dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="182dp"
                 android:hint="Contact No."
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -95,7 +101,7 @@
                 android:id="@+id/tvNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="222dp"
                 android:layout_marginStart="10dp"
                 android:text="Vehicle No"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -108,14 +114,14 @@
                 android:padding="8dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="252dp"
                 android:hint="Vehicle No."
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             <TextView
                 android:id="@+id/tvPwd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="293dp"
                 android:layout_marginStart="10dp"
                 android:text="Password"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -127,21 +133,23 @@
                 android:background="@drawable/custombox"
                 android:padding="8dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="324dp"
                 android:layout_marginEnd="10dp"
                 android:hint="Password"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/btnback"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/black"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:layout_marginTop="20dp"
-                android:textSize="22sp"
-                android:text="BACK" />
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/black"
+                android:text="BACK"
+                android:textSize="22sp" />
 
         </LinearLayout>
     </ScrollView>

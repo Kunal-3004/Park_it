@@ -6,10 +6,12 @@ import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.work.OneTimeWorkRequest
@@ -19,6 +21,9 @@ import com.example.smart.Notification.Constants
 import com.example.smart.Notification.PushNotificationWorker
 import com.example.smart.databinding.ActivityPaymentBinding
 import com.google.firebase.database.*
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.google.zxing.qrcode.QRCodeWriter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -28,6 +33,7 @@ class Payment : AppCompatActivity() {
     private lateinit var parkingId: String
     private var price: Double = 0.0
     private lateinit var upiId: String
+    private lateinit var qrCodeImageView: ImageView
 
     companion object {
         private const val UPI_PAYMENT_REQUEST_CODE = 1
@@ -56,8 +62,11 @@ class Payment : AppCompatActivity() {
         binding.edtid.setText(generateTransactionId())
 
         database = FirebaseDatabase.getInstance().reference.child("parking_locations").child(parkingId)
+        qrCodeImageView=binding.imageView1
 
-        fetchUPIId {}
+        fetchUPIId {
+            generateQRCode()
+        }
 
 
         binding.btnpro.setOnClickListener {
@@ -81,6 +90,34 @@ class Payment : AppCompatActivity() {
                 Toast.makeText(this@Payment, "Failed to fetch UPI ID", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun generateQRCode() {
+        if (upiId.isEmpty()) {
+            Toast.makeText(this, "UPI ID not found, please update the parking location details", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val amount = price.toString()
+        val name = "Parking Service"
+        val payeeUri = Uri.parse("upi://pay?pa=$upiId&pn=$name&am=$amount&cu=INR&tn=Parking%20Payment").toString()
+        val qrCodeWriter = QRCodeWriter()
+        try {
+            val bitMatrix = qrCodeWriter.encode(payeeUri, BarcodeFormat.QR_CODE, 200, 200)
+            val width = bitMatrix.width
+            val height = bitMatrix.height
+            val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    bmp.setPixel(x, y, if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                }
+            }
+            qrCodeImageView.setImageBitmap(bmp)
+            qrCodeImageView.visibility = ImageView.VISIBLE
+        } catch (e: WriterException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openPaymentApp() {

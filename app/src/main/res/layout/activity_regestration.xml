@@ -36,12 +36,18 @@
                 android:layout_marginStart="100dp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp">
             <TextView
                 android:id="@+id/fullName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                android:layout_marginTop="30dp"
                 android:text="NAME"
 
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -51,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custombox"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="60dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:padding="8dp"
@@ -67,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="100dp"
                 android:text="EMAIL"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -76,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custombox"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="130dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:padding="8dp"
@@ -89,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="170dp"
                 android:text="CONTACT NO."
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -100,7 +106,7 @@
                 android:background="@drawable/custombox"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="200dp"
                 android:padding="8dp"
                 android:hint="Contact No."
                 android:digits="1234567890"
@@ -114,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="240dp"
                 android:layout_marginEnd="10dp"
                 android:text="VEHICLE NO."
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -123,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custombox"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="270dp"
                 android:padding="8dp"
                 android:hint="Vehicle No."
                 android:layout_marginStart="10dp"
@@ -139,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="310dp"
                 android:text="PASSWORD"
 
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -150,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/custombox"
                 android:padding="8dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="340dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:hint="Password"
@@ -159,16 +165,26 @@
                 android:inputType="textPassword" >
             </EditText>
 
+            </androidx.cardview.widget.CardView>
+
             <Button
                 android:id="@+id/btnReg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/black"
+                android:textSize="22sp"
                 android:text="Register" />
             <Button
                 android:id="@+id/btncan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:backgroundTint="@color/black"
+                android:textSize="22sp"
                 android:text="Cancel" />
 
         </LinearLayout>
